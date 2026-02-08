@@ -1,0 +1,447 @@
+{
+  "name": "rss2wechat-n8n-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.output.join(\"\\n\\n\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        128
+      ],
+      "id": "db502b93-047d-4ce9-8701-dcdb1b09d953",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {
+          "systemMessage": "我是一名AI领域创业者，你是我的秘书。我需要把从网站爬取的数据整理成可阅读的新闻简报，每个新闻下附上原链接。要精美可读性强。只保留最有价值的AI和科技新闻内容。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        624,
+        128
+      ],
+      "id": "dbe63b5a-39d8-4afa-a871-83d4baca70aa",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        624,
+        304
+      ],
+      "id": "f7b3e412-6a27-47cf-9e03-fb813a3c9fd3",
+      "name": "DeepSeek Chat Model2",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "c2f1jWpzdVQQo9Fu",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        896,
+        128
+      ],
+      "id": "2b37b278-c82c-43a9-9b6d-42cad9aea0ae",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "operation": "draft:add",
+        "articles": "=[\n  {\n    \"article_type\": \"news\",\n    \"title\": \"最新001\",\n    \"author\": \"Lonnie01\",\n    \"content\": \"{{$('Code').item.json.data.replace(/\\\"/g, '&quot;')}}\",\n    \"thumb_media_id\": \"{{ $json.item[0].media_id }}\",\n    \"show_cover_pic\": 1,\n    \"need_open_comment\": 1,\n    \"only_fans_can_comment\": 0,\n    \"auto_publish\": false,\n    \"publish_time\": \"immediate\"\n  }\n]"
+      },
+      "type": "n8n-nodes-wechat-offiaccount.wechatOfficialAccountNode",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        128
+      ],
+      "id": "65986745-3aa3-456f-afb7-dbfb5d0e4e0a",
+      "name": "Wechat Official Account Node3",
+      "credentials": {
+        "wechatOfficialAccountCredentialsApi": {
+          "id": "HK4UbXBRcD3tGpLt",
+          "name": "Wechat Official Account Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "media:batchGetMaterial"
+      },
+      "type": "n8n-nodes-wechat-offiaccount.wechatOfficialAccountNode",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        128
+      ],
+      "id": "61e7c3dc-a962-45c1-8d17-56618ed7335b",
+      "name": "Wechat Official Account Node1",
+      "credentials": {
+        "wechatOfficialAccountCredentialsApi": {
+          "id": "HK4UbXBRcD3tGpLt",
+          "name": "Wechat Official Account Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取输入数据\nconst inputItems = $input.all();\n\n// 处理每个项目\nconst processedItems = inputItems.map(item => {\n  const originalData = item.json;\n  \n  // 替换data字段中的\\n为<br>标签\n  const processedData = {\n    ...originalData,\n    data: originalData.data.replace(/\\n/g, '<br>')\n  };\n\n  return {\n    json: processedData\n  };\n});\n\n// 返回处理后的数据\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        128
+      ],
+      "id": "21659332-ca97-41eb-8b30-76486ae126d6",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        128
+      ],
+      "id": "bee88c35-31f7-4e36-a01f-4aef874f9796",
+      "name": "When clicking 'Test workflow'"
+    },
+    {
+      "parameters": {
+        "url": "https://www.producthunt.com/feed",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        256
+      ],
+      "id": "e193d89c-4572-4fdc-8874-2f2364eaf669",
+      "name": "Product Hunt"
+    },
+    {
+      "parameters": {
+        "url": "https://stratechery.com/feed/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6fbfedaa-6c7c-4719-95b0-4d826ef8f054",
+      "name": "Stratechery"
+    },
+    {
+      "parameters": {
+        "url": "https://testingcatalog.com/rss/",
+        "options": {
+          "ignoreSSL": false
+        }
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        128
+      ],
+      "id": "e9b7e41e-f9ee-4a1d-94ec-fc141154d337",
+      "name": "TestingCatalog"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        112
+      ],
+      "id": "dfc0c281-58e4-421b-901d-8bc2358cf6a0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        160,
+        128
+      ],
+      "id": "dc3bade2-a304-40f3-ac95-d8407f9231e7",
+      "name": "Limit2"
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "url": "={{ $json.link }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        496,
+        128
+      ],
+      "id": "a352cf51-d62b-4bff-bc85-45d29c5959c6",
+      "name": "Scrape A Url And Get Its Content",
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "RoQ8HwA31oO8xUmu",
+          "name": "FireCrawl account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        160,
+        0
+      ],
+      "id": "27455a14-7e89-4cee-aff2-41c177657919",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        160,
+        256
+      ],
+      "id": "e4cf4363-6b78-4198-b802-4963fdf45bb7",
+      "name": "Limit3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wechat Official Account Node1": {
+      "main": [
+        [
+          {
+            "node": "Wechat Official Account Node3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Wechat Official Account Node1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stratechery": {
+      "main": [
+        []
+      ]
+    },
+    "TestingCatalog": {
+      "main": [
+        []
+      ]
+    },
+    "Product Hunt": {
+      "main": [
+        [
+          {
+            "node": "Limit3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Stratechery",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Product Hunt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TestingCatalog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Scrape A Url And Get Its Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Scrape A Url And Get Its Content": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wechat Official Account Node3": {
+      "main": [
+        []
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e4b83eca-9ab3-4627-9ba8-2996c81cdafc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "05871fc5ca0dbb15da82ddcf0af547ee2c86a5a92e87f5eba9cbac29a833735c"
+  },
+  "id": "V7tLU2K2DzdHu31gdpqLN",
+  "tags": []
+}
