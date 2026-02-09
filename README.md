@@ -18,7 +18,7 @@
 ## 🛠️ 使用
 
 
-1.**导入工作流**：
+1。 **导入工作流**：
 
   - 从rss2wechat-n8n-workflow.json复制JSON。
   - 在n8n UI中，转到Workflows > Import from File/URL 并粘贴/上传JSON。
