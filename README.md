@@ -19,21 +19,21 @@
 
 
 1.**导入工作流**：
-   - 从rss2wechat-n8n-workflow.json复制JSON。
-   - 在n8n UI中，转到Workflows > Import from File/URL 并粘贴/上传JSON。
+- 从rss2wechat-n8n-workflow.json复制JSON。
+- 在n8n UI中，转到Workflows > Import from File/URL 并粘贴/上传JSON。
 
 2. **触发工作流**：
-   - 手动：在n8n UI中点击"Test workflow"（连接到"When clicking 'Test workflow'"节点）。
-   - 定时：添加Schedule节点或使用n8n的cron功能每日/每周运行。
+- 手动：在n8n UI中点击"Test workflow"（连接到"When clicking 'Test workflow'"节点）。
+- 定时：添加Schedule节点或使用n8n的cron功能每日/每周运行。
 
 3. **工作流流程**：
-   - 获取并限制RSS订阅。
-   - 合并并爬取完整内容。
-   - AI处理成简报的格式。
-   - 聚合、格式化并发送到微信公众号作为草稿。
+- 获取并限制RSS订阅。
+- 合并并爬取完整内容。
+- AI处理成简报的格式。
+- 聚合、格式化并发送到微信公众号作为草稿。
 
 4. **输出**：
-   - 在您的微信公众号后台出现新草稿，准备审阅和发布。
+- 在您的微信公众号后台出现新草稿，准备审阅和发布。
 
 ## ⚠️ 故障排除
 
