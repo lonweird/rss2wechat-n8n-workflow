@@ -19,12 +19,10 @@
 
 
 1.**导入工作流**：
-
    - 从rss2wechat-n8n-workflow.json复制JSON。
    - 在n8n UI中，转到Workflows > Import from File/URL 并粘贴/上传JSON。
 
 2. **触发工作流**：
-
    - 手动：在n8n UI中点击"Test workflow"（连接到"When clicking 'Test workflow'"节点）。
    - 定时：添加Schedule节点或使用n8n的cron功能每日/每周运行。
 
